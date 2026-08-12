@@ -1,5 +1,5 @@
 {
-  "name": "base44-app",
+  "name": "aya-cosmeticos-ecommerce",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,8 +12,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@base44/sdk": "^0.8.41",
-    "@base44/vite-plugin": "^1.0.30",
     "@hello-pangea/dnd": "^17.0.0",
     "@hookform/resolvers": "^4.1.2",
     "@radix-ui/react-accordion": "^1.2.3",
@@ -98,20 +96,3 @@
     "vite": "^6.1.0"
   }
 }
-vite.config.js
-import base44 from "@base44/vite-plugin"
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  plugins: [
-    base44({
-      legacySDKImports: process.env.BASE44_LEGACY_SDK_IMPORTS === 'true',
-      hmrNotifier: true,
-      navigationNotifier: true,
-      analyticsTracker: true,
-      visualEditAgent: true
-    }),
-    react(),
-  ]
-});
