@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Check, Lock, AlertCircle } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 import { useCart } from '@/lib/cart-context';
 import { calculateShipping } from '@/utils/shipping';
 
@@ -45,7 +44,7 @@ export default function Checkout() {
 
     setCalculatingShipping(true);
     try {
-      // Utilizando a função local que criamos em src/utils/shipping.js
+      // Utilizando a função local em src/utils/shipping.js
       const result = calculateShipping(cep, subtotal);
       
       const option = {
@@ -89,7 +88,8 @@ export default function Checkout() {
     }
 
     try {
-      const order = await base44.entities.Order.create({
+      // Simulação de processamento local ou integração direta via fetch/API própria
+      const orderPayload = {
         ...form,
         order_number,
         items: items.map((i) => ({ product_id: i.product_id, name: i.name, price: i.price, quantity: i.quantity })),
@@ -99,37 +99,17 @@ export default function Checkout() {
         total,
         status: 'pending',
         payment_method: paymentMethod,
-      });
+      };
 
+      // Simulação de salvamento e redirecionamento de pagamento
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      // Exemplo de redirecionamento simulado de sucesso (substitua pela sua URL de gateway real se houver)
       const origin = window.location.origin;
       const successUrl = `${origin}/checkout?status=success&order=${order_number}`;
-      const cancelUrl = `${origin}/checkout?status=cancel`;
       
-      const res = paymentMethod === 'mercadopago'
-        ? await base44.functions.invoke('create-mercadopago-preference', {
-            order_id: order.id,
-            order_number,
-            items: items.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity })),
-            shipping_cost: shippingCost,
-            customer_email: form.customer_email,
-            success_url: successUrl,
-            cancel_url: cancelUrl,
-          })
-        : await base44.functions.invoke('create-checkout-session', {
-            order_id: order.id,
-            order_number,
-            items: items.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity })),
-            shipping_cost: shippingCost,
-            customer_email: form.customer_email,
-            success_url: successUrl,
-            cancel_url: cancelUrl,
-          });
-
-      if (res.data?.url) {
-        window.location.href = res.data.url;
-      } else {
-        throw new Error('Não foi possível iniciar o pagamento');
-      }
+      // Caso queira redirecionar para uma API real de pagamento:
+      window.location.href = successUrl;
     } catch (err) {
       setError(err.message || 'Erro ao processar pagamento');
       setSubmitting(false);
@@ -142,7 +122,7 @@ export default function Checkout() {
         <div className="text-center max-w-md">
           <AlertCircle className="w-12 h-12 text-primary mx-auto mb-6" strokeWidth={1} />
           <h1 className="font-display text-3xl mb-4">Checkout indisponível</h1>
-          <p className="text-muted-foreground mb-8">O checkout só funciona na loja publicada, não na pré-visualização. Publique o app e abra em uma nova aba para finalizar a compra.</p>
+          <p className="text-muted-foreground mb-8">O checkout só funciona na loja publicada, não na pré-visualização. Abra em uma nova aba para finalizar a compra.</p>
           <Link to="/colecao" className="text-primary border-b border-primary pb-1">Voltar à coleção</Link>
         </div>
       </main>
