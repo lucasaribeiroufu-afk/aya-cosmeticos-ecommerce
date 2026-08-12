@@ -14,8 +14,10 @@ import Home from '@/pages/Home';
 import Shop from '@/pages/Shop';
 import ProductDetail from '@/pages/ProductDetail';
 import Checkout from '@/pages/Checkout';
-import Admin from '@/pages/Admin';
 import AdminLayout from '@/components/layouts/AdminLayout';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
+import AdminProducts from '@/pages/admin/AdminProducts';
+import AdminOrders from '@/pages/admin/AdminOrders';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -50,9 +52,9 @@ const AuthenticatedApp = () => {
 
         {/* Rotas do Painel Administrativo com Layout estruturado */}
         <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Admin />} />
-          <Route path="produtos" element={<Admin />} />
-          <Route path="pedidos" element={<Admin />} />
+          <Route index element={<AdminDashboard />} />
+          <Route path="produtos" element={<AdminProducts />} />
+          <Route path="pedidos" element={<AdminOrders />} />
         </Route>
 
         <Route path="*" element={<PageNotFound />} />
