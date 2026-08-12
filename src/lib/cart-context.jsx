@@ -9,6 +9,8 @@ function reducer(state, action) {
       return { ...state, items: action.items };
     case 'ADD': {
       const { product, quantity = 1 } = action;
+      if (!product || !product.id) return state;
+
       const existing = state.items.find((i) => i.product_id === product.id);
       let items;
       if (existing) {
@@ -18,9 +20,9 @@ function reducer(state, action) {
       } else {
         items = [...state.items, {
           product_id: product.id,
-          name: product.name,
-          price: product.price,
-          image_url: product.image_url,
+          name: product.name || 'Produto sem nome',
+          price: Number(product.price) || 0,
+          image_url: product.image_url || '',
           quantity,
         }];
       }
