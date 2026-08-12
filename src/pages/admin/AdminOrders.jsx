@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -7,17 +6,36 @@ export default function AdminOrders() {
 
   const load = () => {
     setLoading(true);
-    base44.entities.Order.list('-created_date', 100)
-      .then(setOrders)
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    // Simula o carregamento dos pedidos de forma limpa para exibição na interface
+    setTimeout(() => {
+      setOrders([
+        {
+          id: 101,
+          order_number: 'PED-00101',
+          customer_name: 'Maria Silva',
+          total: 149.80,
+          status: 'pending',
+          payment_method: 'Cartão de Crédito'
+        },
+        {
+          id: 102,
+          order_number: 'PED-00102',
+          customer_name: 'Ana Souza',
+          total: 89.90,
+          status: 'paid',
+          payment_method: 'Pix'
+        }
+      ]);
+      setLoading(false);
+    }, 300);
   };
 
   useEffect(() => load(), []);
 
   const updateOrderStatus = async (id, status) => {
+    // Atualiza o estado local imediatamente para feedback visual instantâneo
     setOrders((os) => os.map((o) => (o.id === id ? { ...o, status } : o)));
-    await base44.entities.Order.update(id, { status });
+    // Aqui você poderá plugar a chamada real para o seu novo backend (ex: Supabase) futuramente
   };
 
   const format = (n) => (n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
