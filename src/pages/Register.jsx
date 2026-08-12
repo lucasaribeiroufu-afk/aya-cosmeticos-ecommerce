@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createClient } from '@base44/sdk';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -11,14 +10,17 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const base44 = createClient();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    
     try {
-      await base44.auth.signUpWithEmailAndPassword(email, password, { name });
+      // Substitua esta simulação pela chamada real ao seu backend ou provedor de autenticação (ex: Supabase, Firebase)
+      // Exemplo: await supabase.auth.signUp({ email, password, options: { data: { name } } });
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      
       navigate('/');
     } catch (err) {
       setError(err.message || 'Erro ao criar conta');
