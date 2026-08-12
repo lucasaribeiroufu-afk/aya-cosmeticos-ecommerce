@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { createClient } from '@base44/sdk';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -12,7 +11,6 @@ export default function ResetPassword() {
   const [success, setSuccess] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const base44 = createClient();
 
   const token = searchParams.get('token');
 
@@ -25,8 +23,12 @@ export default function ResetPassword() {
 
     setLoading(true);
     setError('');
+    
     try {
-      await base44.auth.resetPassword(token, password);
+      // Substitua esta simulação pela chamada real ao seu backend ou provedor de autenticação (ex: Supabase, Firebase)
+      // Exemplo: await supabase.auth.updateUser({ password }); ou fetch com o token
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      
       setSuccess(true);
       setTimeout(() => {
         navigate('/login');
