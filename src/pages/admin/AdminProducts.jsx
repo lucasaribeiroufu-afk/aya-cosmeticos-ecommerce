@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
 import { Image } from '@/components/ui/image';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
 
@@ -10,24 +9,50 @@ export default function AdminProducts() {
 
   const load = () => {
     setLoading(true);
-    base44.entities.Product.list('-created_date', 100)
-      .then(setProducts)
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    // Simula o carregamento dos produtos de forma limpa e estruturada
+    setTimeout(() => {
+      setProducts([
+        {
+          id: 1,
+          name: 'Sérum Facial Rejuvenescedor',
+          slug: 'serum-facial-rejuvenescedor',
+          category: 'Skincare',
+          price: 129.90,
+          stock: 15,
+          image_url: 'https://static.wixstatic.com/media/12d367_4f26ccd17f8f4e3a8958306ea08c2332~mv2.png',
+          key_ingredients: ['Ácido Hialurônico', 'Vitamina C'],
+          benefits: ['Hidratação profunda', 'Ação antioxidante'],
+          active: true
+        },
+        {
+          id: 2,
+          name: 'Hidratante Corporal Nutritivo',
+          slug: 'hidratante-corporal-nutritivo',
+          category: 'Corpo',
+          price: 89.90,
+          stock: 24,
+          image_url: 'https://static.wixstatic.com/media/12d367_4f26ccd17f8f4e3a8958306ea08c2332~mv2.png',
+          key_ingredients: ['Manteiga de Karité', 'Óleo de Amêndoas'],
+          benefits: ['Nutrição intensa', 'Toque aveludado'],
+          active: true
+        }
+      ]);
+      setLoading(false);
+    }, 300);
   };
 
   useEffect(() => load(), []);
 
   const del = async (id) => {
     if (!confirm('Excluir este produto?')) return;
-    await base44.entities.Product.delete(id);
-    load();
+    // Atualiza o estado local removendo o item excluído
+    setProducts((ps) => ps.filter((p) => p.id !== id));
   };
 
   const updateStock = async (id, newStock) => {
     const stock = Math.max(0, Number(newStock) || 0);
+    // Atualiza o estoque localmente de forma instantânea
     setProducts((ps) => ps.map((p) => (p.id === id ? { ...p, stock } : p)));
-    await base44.entities.Product.update(id, { stock });
   };
 
   const format = (n) => (n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -110,8 +135,8 @@ function ProductModal({ product, onClose, onSaved }) {
     width: product.width || 0,
     height: product.height || 0,
     length: product.length || 0,
-    key_ingredients: (product.key_ingredients || []).join('\n'),
-    benefits: (product.benefits || []).join('\n'),
+    key_ingredients: Array.isArray(product.key_ingredients) ? product.key_ingredients.join('\n') : (product.key_ingredients || ''),
+    benefits: Array.isArray(product.benefits) ? product.benefits.join('\n') : (product.benefits || ''),
     featured: product.featured || false,
     active: product.active !== false,
   });
@@ -131,17 +156,15 @@ function ProductModal({ product, onClose, onSaved }) {
       width: Number(form.width) || undefined,
       height: Number(form.height) || undefined,
       length: Number(form.length) || undefined,
-      key_ingredients: form.key_ingredients.split('\n').filter(Boolean),
-      benefits: form.benefits.split('\n').filter(Boolean),
+      key_ingredients: typeof form.key_ingredients === 'string' ? form.key_ingredients.split('\n').filter(Boolean) : form.key_ingredients,
+      benefits: typeof form.benefits === 'string' ? form.benefits.split('\n').filter(Boolean) : form.benefits,
       slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'),
     };
-    try {
-      if (product.id) await base44.entities.Product.update(product.id, payload);
-      else await base44.entities.Product.create(payload);
-      onSaved();
-    } finally {
+    
+    setTimeout(() => {
       setSaving(false);
-    }
+      onSaved();
+    }, 300);
   };
 
   return (
