@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Leaf, FlaskConical, ShieldCheck, Sparkles } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 import { Image } from '@/components/ui/image';
 import ProductCard from '@/components/store/ProductCard';
 
@@ -14,10 +13,42 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.entities.Product.filter({ featured: true, active: true }, '-created_date', 6)
-      .then(setProducts)
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    // Simula a busca de produtos em destaque localmente (substitua por fetch('/api/products?featured=true') se necessário)
+    const fetchFeaturedProducts = async () => {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        setProducts([
+          {
+            id: 1,
+            name: 'Sérum Facial Rejuvenescedor',
+            slug: 'serum-facial-rejuvenescedor',
+            subtitle: 'Alta performance antioxidante',
+            price: 129.90,
+            image_url: 'https://static.wixstatic.com/media/12d367_4f26ccd17f8f4e3a8958306ea08c2332~mv2.png',
+            category: 'Skincare',
+            featured: true,
+            active: true
+          },
+          {
+            id: 2,
+            name: 'Hidratante Corporal Nutritivo',
+            slug: 'hidratante-corporal-nutritivo',
+            subtitle: 'Nutrição intensa prolongada',
+            price: 89.90,
+            image_url: 'https://static.wixstatic.com/media/12d367_4f26ccd17f8f4e3a8958306ea08c2332~mv2.png',
+            category: 'Corpo',
+            featured: true,
+            active: true
+          }
+        ]);
+      } catch (err) {
+        console.error('Erro ao carregar produtos em destaque', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedProducts();
   }, []);
 
   return (
