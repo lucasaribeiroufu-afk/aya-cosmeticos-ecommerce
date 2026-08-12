@@ -1,6 +1,4 @@
-src/pages/Admin.jsx
 import React, { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
 import { Image } from '@/components/ui/image';
 import { Plus, Pencil, Trash2, X, Package, ShoppingCart } from 'lucide-react';
 import Dashboard from '@/components/admin/Dashboard';
@@ -14,35 +12,84 @@ export default function Admin() {
 
   const load = () => {
     setLoading(true);
-    Promise.all([
-      base44.entities.Product.list('-created_date', 100),
-      base44.entities.Order.list('-created_date', 100),
-    ])
-      .then(([ps, os]) => {
-        setProducts(ps);
-        setOrders(os);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    // Simula o carregamento dos dados de produtos e pedidos localmente
+    setTimeout(() => {
+      setProducts([
+        {
+          id: 1,
+          name: 'Sérum Facial Rejuvenescedor',
+          slug: 'serum-facial-rejuvenescedor',
+          subtitle: 'Alta performance antioxidante',
+          description: 'Sérum concentrado de uso diário.',
+          category: 'Skincare',
+          price: 129.90,
+          compare_at_price: 159.90,
+          stock: 15,
+          sku: 'SER-01',
+          image_url: 'https://static.wixstatic.com/media/12d367_4f26ccd17f8f4e3a8958306ea08c2332~mv2.png',
+          volume: '30ml',
+          weight: 0.1,
+          key_ingredients: ['Ácido Hialurônico', 'Vitamina C'],
+          benefits: ['Hidratação profunda', 'Ação antioxidante'],
+          featured: true,
+          active: true
+        },
+        {
+          id: 2,
+          name: 'Hidratante Corporal Nutritivo',
+          slug: 'hidratante-corporal-nutritivo',
+          subtitle: 'Nutrição intensa prolongada',
+          description: 'Creme corporal de toque aveludado.',
+          category: 'Corpo',
+          price: 89.90,
+          compare_at_price: 110.00,
+          stock: 24,
+          sku: 'COR-02',
+          image_url: 'https://static.wixstatic.com/media/12d367_4f26ccd17f8f4e3a8958306ea08c2332~mv2.png',
+          volume: '200ml',
+          weight: 0.25,
+          key_ingredients: ['Manteiga de Karité', 'Óleo de Amêndoas'],
+          benefits: ['Nutrição intensa', 'Toque aveludado'],
+          featured: false,
+          active: true
+        }
+      ]);
+      setOrders([
+        {
+          id: 101,
+          order_number: 'PED-00101',
+          customer_name: 'Maria Silva',
+          total: 149.80,
+          status: 'pending',
+          payment_method: 'Cartão de Crédito'
+        },
+        {
+          id: 102,
+          order_number: 'PED-00102',
+          customer_name: 'Ana Souza',
+          total: 89.90,
+          status: 'paid',
+          payment_method: 'Pix'
+        }
+      ]);
+      setLoading(false);
+    }, 300);
   };
 
   useEffect(() => load(), []);
 
   const del = async (id) => {
     if (!confirm('Excluir este produto?')) return;
-    await base44.entities.Product.delete(id);
-    load();
+    setProducts((ps) => ps.filter((p) => p.id !== id));
   };
 
   const updateStock = async (id, newStock) => {
     const stock = Math.max(0, Number(newStock) || 0);
     setProducts((ps) => ps.map((p) => (p.id === id ? { ...p, stock } : p)));
-    await base44.entities.Product.update(id, { stock });
   };
 
   const updateOrderStatus = async (id, status) => {
     setOrders((os) => os.map((o) => (o.id === id ? { ...o, status } : o)));
-    await base44.entities.Order.update(id, { status });
   };
 
   const format = (n) => (n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -218,8 +265,8 @@ function ProductModal({ product, onClose, onSaved }) {
     width: product.width || 0,
     height: product.height || 0,
     length: product.length || 0,
-    key_ingredients: (product.key_ingredients || []).join('\n'),
-    benefits: (product.benefits || []).join('\n'),
+    key_ingredients: Array.isArray(product.key_ingredients) ? product.key_ingredients.join('\n') : (product.key_ingredients || ''),
+    benefits: Array.isArray(product.benefits) ? product.benefits.join('\n') : (product.benefits || ''),
     featured: product.featured || false,
     active: product.active !== false,
   });
@@ -230,26 +277,11 @@ function ProductModal({ product, onClose, onSaved }) {
   const save = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const payload = {
-      ...form,
-      price: Number(form.price),
-      compare_at_price: Number(form.compare_at_price) || undefined,
-      stock: Number(form.stock),
-      weight: Number(form.weight) || undefined,
-      width: Number(form.width) || undefined,
-      height: Number(form.height) || undefined,
-      length: Number(form.length) || undefined,
-      key_ingredients: form.key_ingredients.split('\n').filter(Boolean),
-      benefits: form.benefits.split('\n').filter(Boolean),
-      slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'),
-    };
-    try {
-      if (product.id) await base44.entities.Product.update(product.id, payload);
-      else await base44.entities.Product.create(payload);
-      onSaved();
-    } finally {
+    
+    setTimeout(() => {
       setSaving(false);
-    }
+      onSaved();
+    }, 300);
   };
 
   return (
