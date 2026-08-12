@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import ProductCard from '@/components/store/ProductCard';
+import { api } from '@/lib/api';
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
@@ -9,25 +10,13 @@ export default function Shop() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Substitua estas chamadas simuladas pelos seus endpoints reais de API
     const fetchCatalogData = async () => {
       try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          fetch('/api/products?active=true&sort=-created_date&limit=60'),
-          fetch('/api/categories?sort=-sort_order&limit=50')
-        ]);
-
-        if (!productsRes.ok || !categoriesRes.ok) {
-          throw new Error('Falha na resposta da API');
-        }
-
-        const ps = await productsRes.json();
-        const cats = await categoriesRes.json();
-
-        setProducts(Array.isArray(ps) ? ps : []);
-        setCategories(Array.isArray(cats) ? cats : []);
+        const { products, categories } = await api.shop.getCatalog();
+        setProducts(products);
+        setCategories(categories);
       } catch (err) {
-        // Para fins de desenvolvimento ou transição sem backend pronto, insira mock se necessário
+        console.error('Erro ao carregar catálogo:', err);
         setError('Não foi possível carregar o catálogo no momento.');
       } finally {
         setLoading(false);
