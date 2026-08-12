@@ -4,16 +4,15 @@ import { ArrowRight, Leaf, FlaskConical, ShieldCheck, Sparkles } from 'lucide-re
 import { Image } from '@/components/ui/image';
 import ProductCard from '@/components/store/ProductCard';
 
-const HERO_IMG = "https://media.base44.com/images/public/6a6cbc5e6576c73c3848bac8/49ae14c4c_generated_b1360695.png";
-const LAB_IMG = "https://media.base44.com/images/public/6a6cbc5e6576c73c3848bac8/234bcc091_generated_53627b35.png";
-const MODEL_IMG = "https://media.base44.com/images/public/6a6cbc5e6576c73c3848bac8/53e3c5a7b_generated_7d544b3a.png";
+const HERO_IMG = "https://images.unsplash.com/photo-1608248597359-f17b1554b36b?auto=format&fit=crop&q=80&w=1600";
+const LAB_IMG = "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&q=80&w=1200";
+const MODEL_IMG = "https://images.unsplash.com/photo-1512290900722-9a707b82b9db?auto=format&fit=crop&q=80&w=1600";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simula a busca de produtos em destaque localmente (substitua por fetch('/api/products?featured=true') se necessário)
     const fetchFeaturedProducts = async () => {
       try {
         await new Promise((resolve) => setTimeout(resolve, 300));
@@ -24,7 +23,7 @@ export default function Home() {
             slug: 'serum-facial-rejuvenescedor',
             subtitle: 'Alta performance antioxidante',
             price: 129.90,
-            image_url: 'https://static.wixstatic.com/media/12d367_4f26ccd17f8f4e3a8958306ea08c2332~mv2.png',
+            image_url: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=800',
             category: 'Skincare',
             featured: true,
             active: true
@@ -35,7 +34,7 @@ export default function Home() {
             slug: 'hidratante-corporal-nutritivo',
             subtitle: 'Nutrição intensa prolongada',
             price: 89.90,
-            image_url: 'https://static.wixstatic.com/media/12d367_4f26ccd17f8f4e3a8958306ea08c2332~mv2.png',
+            image_url: 'https://images.unsplash.com/photo-1608248597359-f17b1554b36b?auto=format&fit=crop&q=80&w=800',
             category: 'Corpo',
             featured: true,
             active: true
