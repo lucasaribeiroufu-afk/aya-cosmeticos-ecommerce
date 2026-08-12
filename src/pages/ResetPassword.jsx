@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { api } from '@/lib/api';
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -25,15 +26,14 @@ export default function ResetPassword() {
     setError('');
     
     try {
-      // Substitua esta simulação pela chamada real ao seu backend ou provedor de autenticação (ex: Supabase, Firebase)
-      // Exemplo: await supabase.auth.updateUser({ password }); ou fetch com o token
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      await api.auth.resetPassword(token, password);
       
       setSuccess(true);
       setTimeout(() => {
         navigate('/login');
       }, 3000);
     } catch (err) {
+      console.error('Erro ao redefinir senha:', err);
       setError(err.message || 'Erro ao redefinir a senha');
     } finally {
       setLoading(false);
