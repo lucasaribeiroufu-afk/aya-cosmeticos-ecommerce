@@ -7,6 +7,7 @@ export default function Shop() {
   const [categories, setCategories] = useState([]);
   const [active, setActive] = useState('Todos');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     Promise.all([
@@ -14,10 +15,12 @@ export default function Shop() {
       base44.entities.Category.list('-sort_order', 50),
     ])
       .then(([ps, cats]) => {
-        setProducts(ps);
-        setCategories(cats);
+        setProducts(Array.isArray(ps) ? ps : []);
+        setCategories(Array.isArray(cats) ? cats : []);
       })
-      .catch(() => {})
+      .catch((err) => {
+        setError('Não foi possível carregar o catálogo no momento.');
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -37,43 +40,48 @@ export default function Shop() {
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-2 mb-16">
-          {['Todos', ...categories.map((c) => c.name)].map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActive(cat)}
-              className={`px-5 py-2.5 text-xs tracking-[0.1em] uppercase transition-all ${
-                active === cat
-                  ? 'bg-primary text-primary-foreground'
-                  : 'border micro-border text-muted-foreground hover:border-primary hover:text-foreground'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-          {categories.length === 0 && !loading && (
-            <span className="text-sm text-muted-foreground">Todas as categorias</span>
-          )}
-        </div>
-
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="space-y-4">
-                <div className="skeleton aspect-[3/4] w-full" />
-                <div className="skeleton h-4 w-1/3" />
-                <div className="skeleton h-6 w-2/3" />
-              </div>
-            ))}
+        {error ? (
+          <div className="text-center py-20 text-destructive text-sm tracking-wide">
+            {error}
           </div>
-        ) : filtered.length === 0 ? (
-          <p className="text-center text-muted-foreground py-20">Nenhum produto nesta categoria.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-            {filtered.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+          <>
+            <div className="flex flex-wrap justify-center gap-2 mb-16">
+              {['Todos', ...categories.map((c) => c.name)].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActive(cat)}
+                  className={`px-5 py-2.5 text-xs tracking-[0.1em] uppercase transition-all ${
+                    active === cat
+                      ? 'bg-primary text-primary-foreground'
+                      : 'border micro-border text-muted-foreground hover:border-primary hover:text-foreground'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="space-y-4">
+                    <div className="skeleton aspect-[3/4] w-full" />
+                    <div className="skeleton h-4 w-1/3" />
+                    <div className="skeleton h-6 w-2/3" />
+                  </div>
+                ))}
+              </div>
+            ) : filtered.length === 0 ? (
+              <p className="text-center text-muted-foreground py-20">Nenhum produto nesta categoria.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+                {filtered.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </main>
