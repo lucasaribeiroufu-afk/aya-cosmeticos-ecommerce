@@ -15,6 +15,7 @@ import Shop from '@/pages/Shop';
 import ProductDetail from '@/pages/ProductDetail';
 import Checkout from '@/pages/Checkout';
 import Admin from '@/pages/Admin';
+import AdminLayout from '@/components/layouts/AdminLayout';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -41,11 +42,19 @@ const AuthenticatedApp = () => {
       <Header />
       <CartDrawer />
       <Routes>
+        {/* Rotas da Loja */}
         <Route path="/" element={<Home />} />
         <Route path="/colecao" element={<Shop />} />
         <Route path="/produto/:slug" element={<ProductDetail />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/admin" element={<Admin />} />
+
+        {/* Rotas do Painel Administrativo com Layout estruturado */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Admin />} />
+          <Route path="produtos" element={<Admin />} />
+          <Route path="pedidos" element={<Admin />} />
+        </Route>
+
         <Route path="*" element={<PageNotFound />} />
       </Routes>
       <Footer />
