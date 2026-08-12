@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
 import { Package, ShoppingCart, DollarSign, Clock } from 'lucide-react';
 import Dashboard from '@/components/admin/Dashboard';
 
@@ -9,16 +8,26 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      base44.entities.Product.list('-created_date', 100),
-      base44.entities.Order.list('-created_date', 100),
-    ])
-      .then(([ps, os]) => {
-        setProducts(ps);
-        setOrders(os);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    // Simula o carregamento dos dados de produtos e pedidos de forma limpa
+    // Aqui você poderá plugar o Supabase ou outra API futuramente
+    const loadAdminData = async () => {
+      try {
+        // Dados de exemplo para o painel não nascer vazio e manter o layout intacto
+        setProducts([
+          { id: 1, name: 'Sérum Facial Rejuvenescedor', price: 129.90, created_date: new Date() },
+          { id: 2, name: 'Hidratante Corporal Nutritivo', price: 89.90, created_date: new Date() }
+        ]);
+        setOrders([
+          { id: 101, total: 219.80, status: 'completed', created_date: new Date() }
+        ]);
+      } catch (error) {
+        console.error("Erro ao carregar dados do painel:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAdminData();
   }, []);
 
   const format = (n) => (n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
