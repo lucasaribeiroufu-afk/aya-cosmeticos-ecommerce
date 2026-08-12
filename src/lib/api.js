@@ -1,12 +1,14 @@
 // src/lib/api.js
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''; // Configure no seu .env
+
+// Ajuste a URL base conforme o seu ambiente
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''; 
 
 export const api = {
   products: {
     get: async (slug) => {
-      // Aqui você coloca a lógica real de fetch
+      // Exemplo de fetch genérico. Se o endpoint retornar erro, ele cai no catch do seu componente.
       const response = await fetch(`${API_BASE_URL}/api/products/${slug}`);
-      if (!response.ok) throw new Error('Produto não encontrado');
+      if (!response.ok) throw new Error('Falha ao buscar produto');
       return response.json();
     }
   }
