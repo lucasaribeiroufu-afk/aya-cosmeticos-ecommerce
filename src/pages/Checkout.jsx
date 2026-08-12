@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Check, Lock, AlertCircle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCart } from '@/lib/cart-context';
+import { calculateShipping } from '@/utils/shipping';
 
 export default function Checkout() {
   const { items, subtotal, clear } = useCart();
@@ -11,10 +12,13 @@ export default function Checkout() {
   const [done, setDone] = useState(null);
   const [error, setError] = useState(null);
   const [iframeBlocked, setIframeBlocked] = useState(false);
+  
+  // Estados ajustados para o cálculo de frete local com o utilitário
   const [shippingOptions, setShippingOptions] = useState([]);
   const [selectedShipping, setSelectedShipping] = useState(null);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
   const [shippingError, setShippingError] = useState(null);
+
   const [paymentMethod, setPaymentMethod] = useState('stripe');
   const [form, setForm] = useState({
     customer_name: '', customer_email: '', customer_phone: '',
@@ -24,31 +28,36 @@ export default function Checkout() {
 
   const shippingCost = selectedShipping?.price || 0;
   const total = subtotal + shippingCost;
-  const format = (n) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const format = (n) => (n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  const calculateShipping = async () => {
+  const handleCalculateShipping = () => {
     const cep = form.shipping_zipcode.replace(/\D/g, '');
+    setShippingError(null);
+    setShippingOptions([]);
+    setSelectedShipping(null);
+
     if (cep.length !== 8) {
       setShippingError('Digite um CEP válido (8 dígitos)');
       return;
     }
+
     setCalculatingShipping(true);
-    setShippingError(null);
-    setShippingOptions([]);
-    setSelectedShipping(null);
     try {
-      const res = await base44.functions.invoke('calculate-shipping', {
-        to_postal_code: cep,
-        items: items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
-      });
-      if (res.data?.options?.length > 0) {
-        setShippingOptions(res.data.options);
-        setSelectedShipping(res.data.options[0]);
-      } else {
-        setShippingError('Nenhuma opção de frete encontrada para este CEP');
-      }
+      // Utilizando a função local que criamos em src/utils/shipping.js
+      const result = calculateShipping(cep, subtotal);
+      
+      const option = {
+        carrier_id: 'standard',
+        carrier: 'Correios / Transportadora',
+        service: result.service,
+        price: result.price,
+        delivery_days: result.deadline,
+      };
+
+      setShippingOptions([option]);
+      setSelectedShipping(option);
     } catch (err) {
       setShippingError(err.message || 'Erro ao calcular frete');
     } finally {
@@ -72,11 +81,13 @@ export default function Checkout() {
     setSubmitting(true);
     setError(null);
     const order_number = 'AYA-' + Date.now().toString().slice(-8);
+
     if (!selectedShipping) {
       setError('Calcule o frete antes de finalizar');
       setSubmitting(false);
       return;
     }
+
     try {
       const order = await base44.entities.Order.create({
         ...form,
@@ -93,6 +104,7 @@ export default function Checkout() {
       const origin = window.location.origin;
       const successUrl = `${origin}/checkout?status=success&order=${order_number}`;
       const cancelUrl = `${origin}/checkout?status=cancel`;
+      
       const res = paymentMethod === 'mercadopago'
         ? await base44.functions.invoke('create-mercadopago-preference', {
             order_id: order.id,
@@ -193,11 +205,11 @@ export default function Checkout() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2 flex gap-3">
                   <div className="flex-1">
-                    <Field label="CEP" value={form.shipping_zipcode} onChange={set('shipping_zipcode')} required placeholder="00000-000" />
+                    <Field label="CEP" value={form.shipping_zipcode} onChange={set('shipping_zipcode')} required placeholder="00000-000" maxLength={9} />
                   </div>
                   <button
                     type="button"
-                    onClick={calculateShipping}
+                    onClick={handleCalculateShipping}
                     disabled={calculatingShipping || items.length === 0}
                     className="self-end px-6 py-3 text-xs tracking-[0.15em] uppercase border micro-border hover:border-primary transition-colors disabled:opacity-50 whitespace-nowrap"
                   >
@@ -222,7 +234,7 @@ export default function Checkout() {
                         <input type="radio" name="shipping" checked={selectedShipping?.carrier_id === opt.carrier_id} onChange={() => setSelectedShipping(opt)} className="accent-primary" />
                         <div>
                           <p className="text-sm">{opt.carrier} · {opt.service}</p>
-                          <p className="text-xs text-muted-foreground">Entrega em {opt.delivery_days} dias úteis</p>
+                          <p className="text-xs text-muted-foreground">Entrega em {opt.delivery_days}</p>
                         </div>
                       </div>
                       <span className="text-sm font-medium">{format(opt.price)}</span>
