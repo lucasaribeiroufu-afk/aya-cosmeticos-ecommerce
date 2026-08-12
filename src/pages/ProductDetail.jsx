@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Minus, Plus, ChevronDown, Check, ArrowLeft } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 import { Image } from '@/components/ui/image';
 import { useCart } from '@/lib/cart-context';
 
@@ -16,10 +15,55 @@ export default function ProductDetail() {
 
   useEffect(() => {
     setLoading(true);
-    base44.entities.Product.filter({ slug, active: true })
-      .then((items) => setProduct(items[0] || null))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    
+    // Substitua esta lógica pela chamada real ao seu endpoint de produtos (ex: fetch(`/api/products/${slug}`))
+    const fetchProductDetail = async () => {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        
+        // Exemplo de dados simulados compatíveis com o slug
+        const mockProducts = {
+          'serum-facial-rejuvenescedor': {
+            id: 1,
+            name: 'Sérum Facial Rejuvenescedor',
+            slug: 'serum-facial-rejuvenescedor',
+            subtitle: 'Alta performance antioxidante',
+            price: 129.90,
+            compare_at_price: 159.90,
+            image_url: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=800',
+            gallery: [
+              'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=800',
+              'https://images.unsplash.com/photo-1608248597359-f17b1554b36b?auto=format&fit=crop&q=80&w=800'
+            ],
+            category: 'Skincare',
+            description: 'Um sérum de alta performance desenvolvido para combater os radicais livres, restaurar a luminosidade natural e promover firmeza profunda na pele.',
+            benefits: [
+              'Ação antioxidante avançada de longa duração',
+              'Estímulo natural da síntese de colágeno',
+              'Textura leve de rápida absorção'
+            ],
+            stock: 15,
+            volume: '30 ml',
+            key_ingredients: [
+              'Vitamina C Estabilizada: Potente antioxidante que uniformiza o tom da pele.',
+              'Ácido Hialurônico: Hidratação profunda em múltiplas camadas cutâneas.',
+              'Extrato Botânico de Chá Verde: Acalma e protege contra poluentes urbanos.'
+            ],
+            active: true
+          }
+        };
+
+        const found = mockProducts[slug] || null;
+        setProduct(found);
+      } catch (err) {
+        console.error('Erro ao carregar detalhes do produto', err);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductDetail();
   }, [slug]);
 
   const format = (n) => (n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -142,7 +186,7 @@ export default function ProductDetail() {
                       </button>
                       <div className={`overflow-hidden transition-all duration-300 ${openIngredient === i ? 'max-h-40 pb-4' : 'max-h-0'}`}>
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                          {ing.split(':')[1]?.trim() || 'Ativo botânico selecionado pela Aya para potencializar a eficácia da fórmula.'}
+                          {ing.split(':')[1]?.trim() || 'Ativo botânico selecionado para potencializar a eficácia da fórmula.'}
                         </p>
                       </div>
                     </div>
