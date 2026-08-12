@@ -2,6 +2,13 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 export const api = {
+  products: {
+    get: async (slug) => {
+      const response = await fetch(`${API_BASE_URL}/api/products/${slug}`);
+      if (!response.ok) throw new Error('Produto não encontrado');
+      return response.json();
+    }
+  },
   shop: {
     getCatalog: async () => {
       const [productsRes, categoriesRes] = await Promise.all([
@@ -26,7 +33,6 @@ export const api = {
   },
   auth: {
     register: async (userData) => {
-      // Substitua pelo seu endpoint real de cadastro
       const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,7 +42,6 @@ export const api = {
       return response.json();
     },
     resetPassword: async (token, password) => {
-      // Substitua pelo seu endpoint real de redefinição
       const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
