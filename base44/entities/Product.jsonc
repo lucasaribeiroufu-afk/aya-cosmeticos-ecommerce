@@ -1,0 +1,27 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "slug": { "type": "string" },
+    "subtitle": { "type": "string" },
+    "description": { "type": "string" },
+    "category": { "type": "string" },
+    "price": { "type": "number" },
+    "compare_at_price": { "type": "number" },
+    "stock": { "type": "number", "default": 0 },
+    "sku": { "type": "string" },
+    "image_url": { "type": "string" },
+    "gallery": { "type": "array", "items": { "type": "string" } },
+    "key_ingredients": { "type": "array", "items": { "type": "string" } },
+    "benefits": { "type": "array", "items": { "type": "string" } },
+    "volume": { "type": "string" },
+    "weight": { "type": "number", "description": "Peso em kg" },
+    "width": { "type": "number", "description": "Largura em cm" },
+    "height": { "type": "number", "description": "Altura em cm" },
+    "length": { "type": "number", "description": "Comprimento em cm" },
+    "featured": { "type": "boolean", "default": false },
+    "active": { "type": "boolean", "default": true }
+  },
+  "required": ["name", "slug", "price"]
+}
