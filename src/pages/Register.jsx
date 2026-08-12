@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { api } from '@/lib/api';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -17,12 +18,10 @@ export default function Register() {
     setError('');
     
     try {
-      // Substitua esta simulação pela chamada real ao seu backend ou provedor de autenticação (ex: Supabase, Firebase)
-      // Exemplo: await supabase.auth.signUp({ email, password, options: { data: { name } } });
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      
+      await api.auth.register({ name, email, password });
       navigate('/');
     } catch (err) {
+      console.error('Erro no registro:', err);
       setError(err.message || 'Erro ao criar conta');
     } finally {
       setLoading(false);
