@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { createClient } from '@base44/sdk';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -9,14 +8,17 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const base44 = createClient();
 
   const handleResetRequest = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    
     try {
-      await base44.auth.requestPasswordReset(email);
+      // Substitua esta simulação pela chamada real ao seu provedor de autenticação (ex: Supabase, Firebase, API própria)
+      // Exemplo com Supabase: await supabase.auth.resetPasswordForEmail(email);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      
       setSuccess(true);
     } catch (err) {
       setError(err.message || 'Erro ao enviar e-mail de recuperação');
