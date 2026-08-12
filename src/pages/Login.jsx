@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createClient } from '@base44/sdk';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -10,14 +9,17 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const base44 = createClient();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    
     try {
-      await base44.auth.signInWithEmailAndPassword(email, password);
+      // Substitua esta simulação pela chamada real ao seu backend ou provedor de autenticação (ex: Supabase, Firebase)
+      // Exemplo: await supabase.auth.signInWithPassword({ email, password });
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      
       navigate('/');
     } catch (err) {
       setError(err.message || 'Erro ao fazer login');
@@ -64,7 +66,7 @@ export default function Login() {
           </div>
 
           <div className="flex items-center justify-between text-xs">
-            <Link to="/forgot-password" class="text-muted-foreground hover:underline">
+            <Link to="/forgot-password" className="text-muted-foreground hover:underline">
               Esqueceu a senha?
             </Link>
           </div>
