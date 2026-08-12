@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { createClient } from '@base44/sdk';
 import { Button } from '@/components/ui/button';
 
 export default function OAuthConsent() {
@@ -8,7 +7,6 @@ export default function OAuthConsent() {
   const [error, setError] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const base44 = createClient();
 
   const clientName = searchParams.get('client_name') || 'Aplicativo Externo';
   const scope = searchParams.get('scope') || 'acesso básico à conta';
@@ -16,12 +14,18 @@ export default function OAuthConsent() {
   const handleAuthorize = async (approved) => {
     setLoading(true);
     setError('');
+    
     try {
-      if (approved) {
-        await base44.auth.approveOAuthConsent();
-      } else {
-        await base44.auth.denyOAuthConsent();
-      }
+      // Substitua esta lógica pela chamada real ao seu endpoint de consentimento OAuth no backend
+      // Exemplo:
+      // await fetch('/api/oauth/consent', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ approved, client_name: clientName, scope })
+      // });
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      
       navigate('/');
     } catch (err) {
       setError(err.message || 'Erro ao processar a autorização');
