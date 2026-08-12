@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { base44 } from '@/api/base44Client';
 import ProductCard from '@/components/store/ProductCard';
 
 export default function Shop() {
@@ -10,18 +9,32 @@ export default function Shop() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    Promise.all([
-      base44.entities.Product.filter({ active: true }, '-created_date', 60),
-      base44.entities.Category.list('-sort_order', 50),
-    ])
-      .then(([ps, cats]) => {
+    // Substitua estas chamadas simuladas pelos seus endpoints reais de API
+    const fetchCatalogData = async () => {
+      try {
+        const [productsRes, categoriesRes] = await Promise.all([
+          fetch('/api/products?active=true&sort=-created_date&limit=60'),
+          fetch('/api/categories?sort=-sort_order&limit=50')
+        ]);
+
+        if (!productsRes.ok || !categoriesRes.ok) {
+          throw new Error('Falha na resposta da API');
+        }
+
+        const ps = await productsRes.json();
+        const cats = await categoriesRes.json();
+
         setProducts(Array.isArray(ps) ? ps : []);
         setCategories(Array.isArray(cats) ? cats : []);
-      })
-      .catch((err) => {
+      } catch (err) {
+        // Para fins de desenvolvimento ou transição sem backend pronto, insira mock se necessário
         setError('Não foi possível carregar o catálogo no momento.');
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCatalogData();
   }, []);
 
   const filtered = useMemo(
